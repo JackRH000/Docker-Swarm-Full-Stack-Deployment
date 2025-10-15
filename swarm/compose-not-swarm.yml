@@ -48,7 +48,7 @@ services:
     build: 
       context: ./login
       args: 
-        ENCRYPT_HOST_IP: 34.129.141.86
+        ENCRYPT_HOST_IP: #IP ADDR
     networks:
       - sameNetworkAsMysql
   
@@ -66,8 +66,8 @@ services:
     build: 
       context: ./frontend
       args:
-        REACT_APP_LOGIN_HOST_IP: 34.129.141.86
-        REACT_APP_SOLUTIONS_HOST_IP: 34.129.141.86
+        REACT_APP_LOGIN_HOST_IP: #IP ADDR
+        REACT_APP_SOLUTIONS_HOST_IP: #IP ADDR
     ports:
       - 80:3000 
     networks:

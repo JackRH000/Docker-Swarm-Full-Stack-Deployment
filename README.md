@@ -63,3 +63,4 @@ sudo docker service update --image localhost:5000/fixit-frontend:v2 fixit_fronte
 - ⚠️ Update any IP addresses in compose files before deploying.
 - 🧩 The swarm example demonstrates deployment but requires a reachable database for the API to function.
 
+
