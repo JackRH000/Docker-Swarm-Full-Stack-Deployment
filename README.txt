@@ -1,42 +1,65 @@
+# FixIt — Development README
 
+For a working database with persistent info, use the docker-compose workflow below.
 
-#For working database with persistent info...
+> Note: You must change the IP addresses in the compose files to match your environment.
 
-#You need to change the IP addresses in compose file to match your IP
+## Local (non-swarm) development
 
+Build and run the compose stack:
+
+```bash
 sudo docker-compose -f compose-not-swarm.yml up --build
+```
 
+## Docker Swarm (demo)
 
-#For swarm (includes api but won't work without db) demonstrating docker swarm
+This project includes a swarm example (swarm.yml). The swarm configuration includes the API but it will not work without the database.
 
-(swarm.yml)
+High-level steps (adapted from Docker Swarm docs):
 
-#Many of these commands are slighly modifed from docker swarms official web page
+1. Create the swarm (on manager):
 
-- Create swarm
-docker swarm init
+    ```bash
+    docker swarm init
+    ```
 
--join nodes
-*My implementation has two worker nodes using two additional vms to the manager*
-*Ensure manager node is up with a static IP, same with worker nodes
+2. Join worker nodes (on each worker):
 
-docker swarm join --token *token from init* *IP of manager
+    ```bash
+    # Use the token and manager IP printed by `docker swarm init`
+    docker swarm join --token <token> <MANAGER_IP>
+    ```
+    - My setup used two worker VMs and one manager VM.
+    - Ensure manager and workers have static IPs or consistent addressing.
 
-- Create a registry
-docker service create --name registry --publish published=5000,target=5000 registry:2
+3. Create a registry:
 
-- Push compose to registry and deploy stack to swarm
-docker-compose -f swarm.yml push
+    ```bash
+    docker service create --name registry --publish published=5000,target=5000 registry:2
+    ```
 
-#You need to change the IP addresses in compose file to match your IP
-docker stack deploy --compose-file swarm.yml fixit
+4. Push images from compose to the registry and deploy the stack:
 
-#Rollout and rollback
+    ```bash
+    docker-compose -f swarm.yml push
+    # then on the manager:
+    docker stack deploy --compose-file swarm.yml fixit
+    ```
+    > Remember to update IP addresses inside `swarm.yml` to match your environment.
 
-*Assuming you have built a new image
+## Rollout and rollback (example)
 
+Assuming you built a new image and want to update the service:
+
+```bash
 docker image tag fixit-frontend:v2 127.0.0.1:5000/fixit-frontend:v2
 docker push 127.0.0.1:5000/fixit-frontend:v2
 
 sudo docker service update --image localhost:5000/fixit-frontend:v2 fixit_frontend
+```
+
+## Notes
+- Update any IP addresses in compose files before deploying.
+- The swarm example demonstrates deployment but requires a reachable database for the API to function.
 
